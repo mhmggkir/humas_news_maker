@@ -12,12 +12,16 @@ from docx.shared import Pt, Inches
 from urllib.parse import urlparse
 from io import BytesIO
 from dotenv import load_dotenv
+from html2image import Html2Image
 
 load_dotenv()
 
+hti = Html2Image()
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 document = Document()
 headers_requests = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:77.0) Gecko/20100101 Firefox/77.0"}
+
+classements = ["https://www.flashscore.com/football/indonesia/liga-1/standings/#/IoZQW2N8/table/overallD"]
 
 news_structure = {"src": "", "page": {"width": 8.27, "height": 11.69, "mtop": 0.5, "mbot": 0.5, "mlef": 0.5, "mrig": 0.5}, "title": {"font": "Times New Roman", "size": 22, "bold": True, "content": ""}, "quotes": {"font": "Times New Roman", "size": 10, "italic": True, "content": ""}, "image": {"height": 2.36, "src": ""}, "paragraphs": [{"font": "Times New Roman", "size": 11, "content": ""}]}
 
@@ -36,17 +40,31 @@ def generate_news(news):
       print(f"News failed to generate. Attemps: {i+1}")
       time.sleep(0.5)
 
-def news_filter(url):
+def news_filter(url, element):
   domain = urlparse(url).netloc
 
+  inner_news = element.find_all("p", {"class": None})
   if (domain.endswith("cnnindonesia.com")):
-    return "cnnindonesia"
+    image = element.find("img", {"class": "w-full"})
   elif (domain.endswith("kompas.com")):
-    return "kompas"
+    image_wrap = element.find("div", {"class": "photo__wrap"})
+    image = None
+    if (image_wrap is not None):
+      image = image_wrap.find("img")
   elif (domain.endswith("detik.com")):
-    return "detik"
+    image = element.find("img", {"class": "img-zoomin"})
   elif (domain.endswith("tribunnews.com")):
-    return "tribunnews"
+    image = element.find("img", {"class": "imgfull"})
+  elif (domain.endswith("kumparan.com")):
+    inner_news = element.find_all("span", {"class": "Textweb__StyledText-sc-1ed9ao-0"})
+    image = element.find("img", {"class": "ImageLoaderweb__StyledImage-sc-zranhd-0"})
+  elif (domain.endswith("bola.com")):
+    image = element.find("img", {"class": "read-page--photo-gallery--item__picture-lazyload"})
+  elif (domain.endswith("kincir.com")):
+    image = element.find("img", {"class": "wp-post-image"})
+  
+  return {"inner_news": inner_news, "image": image}
+
 
 def get_news(url):
   res_arr = []
@@ -55,19 +73,9 @@ def get_news(url):
     try:
       response = requests.get(url=url, headers=headers_requests)
       element = BeautifulSoup(response.content, "html.parser")
-      inner_news = element.find_all("p", {"class": None})
-      if (news_filter(url) == "cnnindonesia"):
-        image = element.find("img", {"class": "w-full"})
-      elif (news_filter(url) == "kompas"):
-        image_wrap = element.find("div", {"class": "photo__wrap"})
-        image = None
-        if (image_wrap is not None):
-          image = image_wrap.find("img")
-      elif (news_filter(url) == "detik"):
-        image = element.find("img", {"class": "img-zoomin"})
-      elif (news_filter(url) == "tribunnews"):
-        image = element.find("img", {"class": "imgfull"})
-      for e in inner_news:
+      filtered = news_filter(url=url, element=element)
+      image = filtered["image"]
+      for e in filtered["inner_news"]:
         text = e.text
         if text != "":
           res_arr.append(text)
@@ -97,12 +105,15 @@ def create_page(data, img, news_length, news_index):
   quotes_font.italic = data["quotes"]["italic"]
   quotes_font.name = data["quotes"]["font"]
 
-  if (img["src"] == "placeholder"):
-    document.add_picture("./placeholder.png", height=Inches(img["height"]))
-  else:
-    response = requests.get(url=img["src"], headers=headers_requests)
-    image_stream = BytesIO(response.content)
-    document.add_picture(image_stream, height=Inches(img["height"]))
+  try:
+    if (img["src"] == "placeholder"):
+      document.add_picture("./assets/placeholder.png", height=Inches(img["height"]))
+    else:
+      response = requests.get(url=img["src"], headers=headers_requests)
+      image_stream = BytesIO(response.content)
+      document.add_picture(image_stream, height=Inches(img["height"]))
+  except:
+      document.add_picture("./placeholder.png", height=Inches(img["height"]))
 
   last_paragraph = document.paragraphs[-1]
   last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -112,8 +123,6 @@ def create_page(data, img, news_length, news_index):
     paragraph_font = paragraph.add_run(p["content"]).font
     paragraph_font.name = p["font"]
     paragraph_font.size = Pt(p["size"])
-  if news_length-1 != news_index:
-    document.add_page_break()
 
 def create_document(data):
   section = document.sections[0]
@@ -142,15 +151,22 @@ def create_document(data):
 def make_news(url_arr):
   news_result = []
   for index, url in enumerate(url_arr):
-    scrap_result = get_news(url)
-    news = generate_news(scrap_result["news"])
-    if scrap_result["img"] is not None:
-      news["image"]["src"] = scrap_result["img"]["src"]
-    else:
-      news["image"]["src"] = "placeholder"
-    news["src"] = urlparse(url).netloc
-    news_result.append(news)
-    create_page(data=news, img=news["image"], news_length=len(url_arr), news_index=index)
-    print(f"News ({index+1}/{len(url_arr)}) created: {news["title"]["content"]}")
+    for i in range(3):
+      try:
+        scrap_result = get_news(url)
+        news = generate_news(scrap_result["news"])
+        if scrap_result["img"] is not None:
+          news["image"]["src"] = scrap_result["img"]["src"]
+        else:
+          news["image"]["src"] = "placeholder"
+        news["src"] = urlparse(url).netloc
+        news_result.append(news)
+        create_page(data=news, img=news["image"], news_length=len(url_arr), news_index=index)
+        print(f"News ({index+1}/{len(url_arr)}) created: {news["title"]["content"]}")
+        break
+      except Exception as e:
+        print(e)
+        print(f"Creating news ({index+1}/{len(url_arr)}) failed. Retrying ({i+1})")
+        time.sleep(0.3)
     time.sleep(0.3)
   create_document(news_result[0])

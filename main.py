@@ -1,5 +1,3 @@
-print("hello World!!")
-
 from flask import Flask, render_template, request
 from flask_cors import CORS
 from news_generator import make_news
@@ -13,13 +11,8 @@ CORS(app)
 
 news_url_list = []
 
-def is_port_used(port):
-   with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-      return s.connect_ex(("localhost", port)) != 0
-
 def on_ready():
-  while is_port_used(5000):
-     time.sleep(0.1)
+  time.sleep(1)
   webbrowser.open_new("http://localhost:5000")
 
 @app.route("/")
@@ -33,9 +26,8 @@ def generate():
   return "News generated"
 
 def main():
-  threading.Thread(target=on_ready).start()
-  if(not is_port_used(5000)):
-    app.run("127.0.0.1", 5000)
+  on_ready()
+  app.run("127.0.0.1", 5000)
 
 if __name__ == "__main__":
    main()
