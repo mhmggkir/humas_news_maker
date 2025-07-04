@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HuMas News Creator App</title>
+  <style>
+    html {
+      font-family: Arial;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .add-url {
+      display: flex;
+      justify-content: center;
+    }
+    #add-url-input {
+      padding: 0.3rem .5rem;
+      width: 50%;
+      outline: none;
+      border: none;
+      box-shadow: 0 0 1px 1px blue;
+      border-top-left-radius: 10px;
+      border-bottom-left-radius: 10px;
+    }
+    #add-url-btn {
+      cursor: pointer;
+      padding: 0.3rem .5rem;
+      border: none;
+      background-color: gold;
+      box-shadow: 0 0 1px 1px green;
+      border-top-right-radius: 10px;
+      border-bottom-right-radius: 10px;
+    }
+
+    .table-container {
+      display: flex;
+      margin-top: 5px;
+      justify-content: center;
+      padding: 0.5rem;
+    }
+    #url-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    #url-table tr {
+      border-bottom: 1px solid black;
+      text-align: center;
+    }
+    .td-url {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .td-url > input {
+      width: 100%;
+      background: none;
+      border: none;
+      color: black;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    th {
+      padding: 0 .5rem; 
+    }
+    .th-center {
+      border-right: 1px solid black;
+      border-left: 1px solid black;
+    }
+    .delete-btn {
+      background-color: red;
+      color: white;
+      cursor: pointer;
+      border: none;
+      border-radius: 15px;
+      padding: 5px;
+    }
+
+    #generate-btn {
+      &:disabled, &[disabled] {
+        background-color: rgb(173, 173, 173);
+        color: black;
+        cursor: progress;
+      }
+      margin-top: 5px;
+      font-weight: bold;
+      width: 75px;
+      padding: 0.3rem 0.5rem;
+      border: none;
+      border-radius: 10px;
+      background-color: blue;
+      color: white; 
+      align-self: flex-end;
+      cursor: pointer;
+      transition: .1s box-shadow ease-in-out;
+      &:enabled:hover {
+        box-shadow: 0 0 5px 1px blue;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>HuMas News Creator</h1>
+    <div class="add-url">
+      <input placeholder="Add News URL.." id="add-url-input"/>
+      <button id="add-url-btn">Add</button>
+    </div>
+    <div class="table-container">
+      <table id="url-table">
+        <thead>
+          <tr>
+            <th>No.</th>
+            <th class="th-center">URL</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <button onclick="generateNews()" id="generate-btn">Generate</button>
+  </div>
+  <script>
+    const addURLInput = document.getElementById("add-url-input")
+    const addURLbtn = document.getElementById("add-url-btn")
+    const tbody = document.querySelector("tbody")
+    const generateBtn = document.getElementById("generate-btn")
+
+    let URLList = []
+
+    const updateTable = () => {
+      tbody.innerHTML = ""
+
+      URLList.forEach((url, i) => {
+        const tr = `<tr>
+            <td>${i+1}.</td>
+            <td class="td-url"><input disabled value="${url}" /></td>
+            <td><button onclick="deleteURL(${i})" class="delete-btn">Delete</button></td>
+          </tr>`
+        tbody.innerHTML += tr
+      })
+      console.log(URLList)
+    }
+
+    const deleteURL = (index) => {
+      URLList = URLList.filter((_, i) => i != index)
+      updateTable()
+    }
+
+    const generateNews = () => {
+      if (URLList.length == 0) return alert("There aren't news to generate")
+      generateBtn.disabled = true
+
+      fetch("/generate", {method: "POST", headers:{"Content-Type": "application/json"}, body: JSON.stringify({URLList})}).then(() => {
+        alert("News generated!")
+        generateBtn.disabled = false
+      })
+    }
+
+    addURLbtn.addEventListener("click", () => {
+      if (!addURLInput.value.startsWith("https://")) {
+        addURLInput.value = ""
+        return alert("URL is not valid!")
+      }
+
+      if (URLList.filter((url, i) => url == addURLInput.value).length == 0)
+        URLList.push(addURLInput.value)
+      else alert("Input a different URL!")
+      addURLInput.value = ""
+      updateTable()
+    })
+  </script>
+</body>
+</html>
