@@ -123,6 +123,8 @@ def create_page(data, img, news_length, news_index):
     paragraph_font = paragraph.add_run(p["content"]).font
     paragraph_font.name = p["font"]
     paragraph_font.size = Pt(p["size"])
+  if news_index+1 < news_length:
+    document.add_page_break()
 
 def create_document(data):
   section = document.sections[0]
