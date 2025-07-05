@@ -1,8 +1,6 @@
 from flask import Flask, render_template, request
 from flask_cors import CORS
 from news_generator import make_news
-import threading
-import socket
 import time
 import webbrowser
 
