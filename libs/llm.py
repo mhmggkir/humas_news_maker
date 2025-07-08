@@ -4,7 +4,6 @@ from groq import Groq
 def generate_news(news, api_key, system_prompt, news_structure, LLM):
   client = Groq(api_key=api_key)
   system_prompt += str(news_structure)
-  print(system_prompt)
   model = LLM["name"]
   reasoning_support_model_list = LLM["reasoningSupportModels"]
   temperature = LLM["temperature"]
