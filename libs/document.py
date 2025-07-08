@@ -44,7 +44,7 @@ def create_page(data, img, news_length, news_index):
 
 
 
-def create_document(data):
+def create_document(data, classement_list):
   section = document.sections[0]
   section.page_width = Inches(data["page"]["width"])
   section.page_height = Inches(data["page"]["height"])
@@ -55,7 +55,7 @@ def create_document(data):
 
   document.add_page_break()
 
-  for classement in scraper.classements:
+  for classement in classement_list:
     scraper.get_classement(classement)
     document.add_picture("./assets/screenshot.png", width=Inches(4.3))
 

@@ -1,0 +1,48 @@
+{
+  "port": 5000,
+  "newsStructure": {
+    "src": "",
+    "page": {
+      "width": 8.27,
+      "height": 11.69,
+      "mtop": 0.5,
+      "mbot": 0.5,
+      "mlef": 0.5,
+      "mrig": 0.5
+    },
+    "title": {
+      "font": "Times New Roman",
+      "size": 22,
+      "bold": true,
+      "content": ""
+    },
+    "quotes": {
+      "font": "Times New Roman",
+      "size": 10,
+      "italic": true,
+      "content": ""
+    },
+    "image": { "height": 2.36, "content": "" },
+    "paragraphs": [{ "font": "Times New Roman", "size": 11, "content": "" }]
+  },
+  "systemPrompt": "Buat berita yang di kirimkan oleh user menjadi berita yang menarik dan bermodel paragraf, gunakan format json di setiap style font, pastikan isi berita dapat pas pada ukuran kertas yang diberikan (Inch), ukuran font (pt), gunakan bahasa Indonesia, jika berita yang diberikan oleh user kosong maka tuliskan gagal di setiap content, berikan dateline di awal berita yang mengandung tempat dan sumber berita, jangan berikan tulisan copyright, buat 6 paragraf, buat masing masing paragraf usahakan berisi 4 baris dan maksimal 5 baris, gunakan gaya bahasa seperti artikel ilmiah populer, gunakan struktur seperti berikut ",
+  "LLM": {
+    "name": "deepseek-r1-distill-llama-70b",
+    "temperature": 0.6,
+    "top_p": 1.0,
+    "reasoningSupportModels": [
+      "qwen/qwen3-32b",
+      "qwen-qwq-32b",
+      "deepseek-r1-distill-llama-70b"
+    ]
+  },
+  "classementList": [
+    "https://sport.detik.com/sepakbola/klasemen/liga-indonesia",
+    "https://sport.detik.com/sepakbola/klasemen/liga-spanyol",
+    "https://sport.detik.com/sepakbola/klasemen/liga-inggris",
+    "https://id-mpl.com/"
+  ],
+  "requestsHeaders": {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:77.0) Gecko/20100101 Firefox/77.0"
+  }
+}

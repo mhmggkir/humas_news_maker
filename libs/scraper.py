@@ -4,15 +4,11 @@ from urllib.parse import urlparse
 from html2image import Html2Image
 from io import BytesIO
 
-headers_requests = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:77.0) Gecko/20100101 Firefox/77.0"}
-
-classements = ["https://sport.detik.com/sepakbola/klasemen/liga-indonesia", "https://sport.detik.com/sepakbola/klasemen/liga-spanyol", "https://sport.detik.com/sepakbola/klasemen/liga-inggris", "https://id-mpl.com/"]
-
-def scrape_image(element = None, url = ""):
+def scrape_image(element = None, url = "", requests_headers = None):
   for i in range(3):
     try:
       if element != None: url = element["src"]
-      response = requests.get(url, headers=headers_requests)
+      response = requests.get(url, headers=requests_headers)
       image_stream = BytesIO(response.content)
       return image_stream
     except Exception as e:
@@ -46,12 +42,12 @@ def news_filter(url, element):
 
   return {"inner_news": inner_news, "image": image}
 
-def get_news(url):
+def get_news(url, requests_headers):
   res_arr = []
   image = None
   for i in range(3):
     try:
-      response = requests.get(url=url, headers=headers_requests)
+      response = requests.get(url=url, headers=requests_headers)
       element = BeautifulSoup(response.content, "html.parser")
       filtered = news_filter(url=url, element=element)
       image = filtered["image"]
