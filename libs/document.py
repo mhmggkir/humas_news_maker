@@ -1,4 +1,4 @@
-import datetime, math, time
+import datetime, math
 from libs import scraper
 from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH
@@ -57,15 +57,19 @@ def create_document(data):
 
   for classement in scraper.classements:
     scraper.get_classement(classement)
-    time.sleep(0.3)
     document.add_picture("./assets/screenshot.png", width=Inches(4.3))
 
-  week = math.floor(datetime.datetime.now().day/7)
-  month, year = datetime.datetime.now().month, datetime.datetime.now().year
-  if week == 0 and datetime.datetime.now().weekday() > 6:
+  datetime_now = datetime.datetime.now()
+  first_weekday = datetime.datetime(year=datetime_now.year, month=datetime_now.month, day=1).weekday()
+
+  offset_date = datetime_now.day + first_weekday - 1
+  week = math.floor(offset_date/7)
+  month, year = datetime_now.month, datetime_now.year
+  if week == 0:
     week = 4
     month -= 1
     if month == 0:
+      month = 12
       year -=1
   
   formatted_date = datetime.datetime(month=month, year=year, day=1)

@@ -27,5 +27,4 @@ def make_news(url_arr):
         print(e)
         print(f"Creating news ({index+1}/{len(url_arr)}) failed. Retrying ({i+1})")
         time.sleep(0.3)
-    time.sleep(0.3)
   document.create_document(news_result[0])
