@@ -24,8 +24,8 @@ def generate():
   return "News generated"
 
 def main():
-  on_ready()
-  app.run("127.0.0.1", 5000)
+  # on_ready()
+  app.run("127.0.0.1", 5000, debug=True)
 
 if __name__ == "__main__":
    main()

@@ -21,7 +21,7 @@ client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 document = Document()
 headers_requests = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:77.0) Gecko/20100101 Firefox/77.0"}
 
-classements = ["https://www.flashscore.com/football/indonesia/liga-1/standings/#/IoZQW2N8/table/overallD"]
+classements = ["https://sport.detik.com/sepakbola/klasemen/liga-indonesia", "https://sport.detik.com/sepakbola/klasemen/liga-spanyol", "https://sport.detik.com/sepakbola/klasemen/liga-inggris", "https://id-mpl.com/"]
 
 news_structure = {"src": "", "page": {"width": 8.27, "height": 11.69, "mtop": 0.5, "mbot": 0.5, "mlef": 0.5, "mrig": 0.5}, "title": {"font": "Times New Roman", "size": 22, "bold": True, "content": ""}, "quotes": {"font": "Times New Roman", "size": 10, "italic": True, "content": ""}, "image": {"height": 2.36, "src": ""}, "paragraphs": [{"font": "Times New Roman", "size": 11, "content": ""}]}
 
@@ -113,7 +113,7 @@ def create_page(data, img, news_length, news_index):
       image_stream = BytesIO(response.content)
       document.add_picture(image_stream, height=Inches(img["height"]))
   except:
-      document.add_picture("./placeholder.png", height=Inches(img["height"]))
+      document.add_picture("./assets/placeholder.png", height=Inches(img["height"]))
 
   last_paragraph = document.paragraphs[-1]
   last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -126,6 +126,30 @@ def create_page(data, img, news_length, news_index):
   if news_index+1 < news_length:
     document.add_page_break()
 
+def get_classement(url):
+  domain = urlparse(url).netloc
+  response = requests.get(url)
+  element = BeautifulSoup(response.content, "html.parser")
+  hti = Html2Image()
+  hti.output_path = "./assets/"
+  style_file = element.find("link", {"rel": "stylesheet"})
+  style_inline = element.find("style")
+  table = ""
+  if domain.endswith("detik.com"):
+    custom_style = "<style>.new_klasemen .klasemen-table > span:nth-of-type(3) { width: 40px; justify-content: center; } .new_klasemen .klasemen-table > span:nth-of-type(2) { width: 350px; justify-content: flex-start; }</style>"
+    rows = element.find_all("div", {"class": "klasemen-table"})[:16]
+    for row in rows:
+      all_spans = row.find_all("span", recursive=False)
+      row_class = " ".join(row["class"])
+      spans_without_more = "".join(str(x) for x in all_spans[1:])
+      new_row = "".join(f"<div class=\"{row_class}\">{spans_without_more}</div>")
+      table += new_row
+    hti.screenshot(html_str=f"{str(style_file)}{custom_style}<div class=\"new_klasemen\">{table}</div>", size=(895,770))
+  elif domain.endswith("mpl.com"):
+    custom_style = "<style>table { width: 1000px } thead { background-color: black; color: white !important; } tbody > tr:nth-child(2n) { background-color: #eaeaea } tr * { text-align: center; align-items: center }</style>"
+    table = element.find("div", {"id": "standing-regular-season"})
+    hti.screenshot(f"{str(style_file)}{str(style_inline)}{custom_style}{table}", size=(1000, 470))
+
 def create_document(data):
   section = document.sections[0]
   section.page_width = Inches(data["page"]["width"])
@@ -135,9 +159,16 @@ def create_document(data):
   section.left_margin = Inches(data["page"]["mlef"])
   section.right_margin = Inches(data["page"]["mrig"])
 
+  document.add_page_break()
+
+  for classement in classements:
+    get_classement(classement)
+    time.sleep(0.3)
+    document.add_picture("./assets/screenshot.png", width=Inches(4.3))
+
   week = math.floor(datetime.datetime.now().day/7)
   month, year = datetime.datetime.now().month, datetime.datetime.now().year
-  if week == 0 and datetime.datetime.now().weekday() > 0:
+  if week == 0 and datetime.datetime.now().weekday() > 6:
     week = 4
     month -= 1
     if month == 0:
@@ -155,10 +186,10 @@ def make_news(url_arr):
   for index, url in enumerate(url_arr):
     for i in range(3):
       try:
-        scrap_result = get_news(url)
-        news = generate_news(scrap_result["news"])
-        if scrap_result["img"] is not None:
-          news["image"]["src"] = scrap_result["img"]["src"]
+        scrape_result = get_news(url)
+        news = generate_news(scrape_result["news"])
+        if scrape_result["img"] is not None:
+          news["image"]["src"] = scrape_result["img"]["src"]
         else:
           news["image"]["src"] = "placeholder"
         news["src"] = urlparse(url).netloc
