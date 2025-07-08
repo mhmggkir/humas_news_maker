@@ -37,6 +37,14 @@ def news_filter(url, element):
     image_element = element.find("img", {"class": "read-page--photo-gallery--item__picture-lazyload"})
   elif (domain.endswith("kincir.com")):
     image_element = element.find("img", {"class": "wp-post-image"})
+  elif (domain.endswith("cnn.com")):
+    inner_news = element.find_all("p", {"class": "paragraph"})
+    image_element = element.find("img", {"class": "image__dam-img"})
+  elif (domain.endswith("bbc.com")):
+    inner_news = element.find_all("p", {"class": "hxuGS"})
+    image_element = element.find("img", {"class": "dvfjxj"})
+  elif (domain.endswith("cnbcindonesia.com")):
+    image_element = element.find("img", {"class": "w-full object-cover"})
 
   image = scrape_image(element=image_element)
 
