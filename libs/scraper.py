@@ -1,4 +1,5 @@
 import requests, time
+from PIL import Image
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 from html2image import Html2Image
@@ -9,11 +10,15 @@ def scrape_image(element = None, url = "", requests_headers = None):
     try:
       if element != None: url = element["src"]
       response = requests.get(url, headers=requests_headers)
+      print(type(response.content))
       image_stream = BytesIO(response.content)
       return image_stream
     except Exception as e:
-      print(f"Scraping image failed. Attemp {i+1}")
+      print(f"Scraping image failed. Attemps: {i+1}")
       time.sleep(0.5)
+  image = open("./assets/placeholder.png", "rb")
+  image_stream = BytesIO(image.read())
+  return image_stream
 
 def news_filter(url, element):
   domain = urlparse(url).netloc

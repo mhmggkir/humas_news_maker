@@ -23,13 +23,7 @@ def create_page(data, img, news_length, news_index):
   quotes_font.italic = data["quotes"]["italic"]
   quotes_font.name = data["quotes"]["font"]
 
-  try:
-    if (img == None):
-      document.add_picture("./assets/placeholder.png", height=Inches(img["height"]))
-    else:
-      document.add_picture(img["content"], height=Inches(img["height"]))
-  except:
-      document.add_picture("./assets/placeholder.png", height=Inches(img["height"]))
+  document.add_picture(img["content"], height=Inches(img["height"]))
 
   last_paragraph = document.paragraphs[-1]
   last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER

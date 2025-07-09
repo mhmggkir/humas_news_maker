@@ -4,6 +4,7 @@ from groq import Groq
 def generate_news(news, api_key, system_prompt, news_structure, LLM):
   client = Groq(api_key=api_key)
   system_prompt += str(news_structure)
+  print(system_prompt)
   model = LLM["name"]
   reasoning_support_model_list = LLM["reasoningSupportModels"]
   temperature = LLM["temperature"]
@@ -21,6 +22,7 @@ def generate_news(news, api_key, system_prompt, news_structure, LLM):
           ], model=model, response_format={"type": "json_object"}, stream=False, temperature=temperature, top_p=top_p)
       result = generated_news.choices[0].message.content
       return json.loads(result)
-    except:
+    except Exception as e:
+      print(e)
       print(f"News failed to generate. Attemps: {i+1}")
       time.sleep(0.5)

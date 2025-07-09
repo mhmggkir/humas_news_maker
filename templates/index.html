@@ -88,7 +88,7 @@
       &:disabled, &[disabled] {
         background-color: rgb(173, 173, 173);
         color: black;
-        cursor: progress;
+        cursor: not-allowed;
       }
       margin-top: 5px;
       font-weight: bold;
@@ -111,11 +111,11 @@
   <div class="container">
     <h1>HuMas News Creator</h1>
     <div class="add-url">
-      <input placeholder="Add News URL.." id="add-url-input"/>
-      <button id="add-url-btn">Add</button>
+      <input placeholder="Add News URL.." id="add-url-input" autofocus autocomplete="off" autocorrect="off" />
+      <button id="add-url-btn" type="submit">Add</button>
     </div>
     <div class="table-container">
-      <table id="url-table">
+      <table id="url-table" hidden>
         <thead>
           <tr>
             <th>No.</th>
@@ -126,12 +126,13 @@
         <tbody></tbody>
       </table>
     </div>
-    <button onclick="generateNews()" id="generate-btn">Generate</button>
+    <button onclick="generateNews()" id="generate-btn" disabled>Generate</button>
   </div>
   <script>
     const addURLInput = document.getElementById("add-url-input")
     const addURLbtn = document.getElementById("add-url-btn")
     const tbody = document.querySelector("tbody")
+    const table = document.getElementById("url-table")
     const generateBtn = document.getElementById("generate-btn")
 
     let URLList = []
@@ -147,7 +148,15 @@
           </tr>`
         tbody.innerHTML += tr
       })
-      console.log(URLList)
+
+      if (URLList.length == 0) {
+        table.hidden = true
+        generateBtn.disabled = true
+      }
+      else {
+        table.hidden = false
+        generateBtn.disabled = false
+      }
     }
 
     const deleteURL = (index) => {
@@ -165,7 +174,7 @@
       })
     }
 
-    addURLbtn.addEventListener("click", () => {
+    const inputURL = () => {
       if (!addURLInput.value.startsWith("https://")) {
         addURLInput.value = ""
         return alert("URL is not valid!")
@@ -176,6 +185,14 @@
       else alert("Input a different URL!")
       addURLInput.value = ""
       updateTable()
+    }
+
+    addURLInput.addEventListener("keydown", (e) => {
+      if (e.key == "Enter") inputURL()
+    })
+
+    addURLbtn.addEventListener("click", (e) => {
+      inputURL()
     })
   </script>
 </body>
