@@ -37,3 +37,4 @@ def make_news(url_arr):
       finally:
         document.create_page(data=news, img=news["image"], news_length=len(url_arr), news_index=index)
   document.create_document(data=news_result[0], classement_list=classement_list)
+  print("News created!")

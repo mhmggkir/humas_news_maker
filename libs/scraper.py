@@ -1,5 +1,4 @@
-import requests, time
-from PIL import Image
+import requests, time, os
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 from html2image import Html2Image
@@ -92,8 +91,12 @@ def get_classement(url):
   domain = urlparse(url).netloc
   response = requests.get(url)
   element = BeautifulSoup(response.content, "html.parser")
+
+  cache_dir = ".cache/"
+  os.makedirs(cache_dir, exist_ok=True)
+
   hti = Html2Image()
-  hti.output_path = "./assets/"
+  hti.output_path = cache_dir
   style_file = element.find("link", {"rel": "stylesheet"})
   style_inline = element.find("style")
   table = ""

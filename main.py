@@ -1,7 +1,11 @@
-import webbrowser, json, threading, time
+import webbrowser, json, threading, time, os
 from flask import Flask, render_template, request
 from flask_cors import CORS
 from news_generator import make_news
+
+if not os.path.exists(".env") or not os.path.exists("config.json"):
+  print(".env or config.json file isn't exist")
+  exit()
 
 app = Flask(__name__)
 CORS(app)

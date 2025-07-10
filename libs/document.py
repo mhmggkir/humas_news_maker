@@ -1,4 +1,4 @@
-import datetime, math
+import datetime, math, os
 from libs import scraper
 from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH
@@ -74,5 +74,8 @@ def create_document(data, classement_list):
   edition = f"{formatted_date.strftime("%B %Y")} ({str(week)})"
   section.footer.add_paragraph(f"Santri Update {edition}")
   
-  document.save(f"sans {edition}.docx")
+  out_dir = f"SANS/{formatted_date.strftime("%Y/%B")}"
+  os.makedirs(out_dir, exist_ok=True)
+
+  document.save(f"{out_dir}/sans {edition}.docx")
 
