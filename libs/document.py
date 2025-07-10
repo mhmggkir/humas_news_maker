@@ -23,7 +23,10 @@ def create_page(data, img, news_length, news_index):
   quotes_font.italic = data["quotes"]["italic"]
   quotes_font.name = data["quotes"]["font"]
 
-  document.add_picture(img["content"], height=Inches(img["height"]))
+  try:
+    document.add_picture(img["content"], height=Inches(img["height"]))
+  except Exception as e:
+    print(e)
 
   last_paragraph = document.paragraphs[-1]
   last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER

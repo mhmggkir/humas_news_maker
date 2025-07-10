@@ -10,10 +10,10 @@ def scrape_image(element = None, url = "", requests_headers = None):
     try:
       if element != None: url = element["src"]
       response = requests.get(url, headers=requests_headers)
-      print(type(response.content))
       image_stream = BytesIO(response.content)
       return image_stream
     except Exception as e:
+      print(e)
       print(f"Scraping image failed. Attemps: {i+1}")
       time.sleep(0.5)
   image = open("./assets/placeholder.png", "rb")
@@ -50,6 +50,15 @@ def news_filter(url, element):
     image_element = element.find("img", {"class": "dvfjxj"})
   elif (domain.endswith("cnbcindonesia.com")):
     image_element = element.find("img", {"class": "w-full object-cover"})
+  elif (domain.endswith("liputan6.com")):
+    image_element = element.find("img", {"class": "read-page--photo-gallery--item__picture-lazyload"})
+  elif (domain.endswith("tempo.co")):
+    image_element = element.find("img", {"class": "w-full h-auto"})
+  elif (domain.endswith("metrotvnews.com")):
+    image_element = element.find("img", {"class": "news-image"})
+  elif (domain.endswith("abcnews.go.com")):
+    inner_news = element.find_all("p", {"class": "EkqkG"})
+    image_element = element.find("img", {"class": "hsDdd"})
 
   image = scrape_image(element=image_element)
 

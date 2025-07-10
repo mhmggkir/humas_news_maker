@@ -28,11 +28,12 @@ def make_news(url_arr):
           news["image"]["content"] = None
         news["src"] = urlparse(url).netloc
         news_result.append(news)
-        document.create_page(data=news, img=news["image"], news_length=len(url_arr), news_index=index)
         print(f"News ({index+1}/{len(url_arr)}) created: {news["title"]["content"]}")
         break
       except Exception as e:
         print(e)
         print(f"Creating news ({index+1}/{len(url_arr)}) failed. Retrying ({i+1})")
         time.sleep(0.3)
+      finally:
+        document.create_page(data=news, img=news["image"], news_length=len(url_arr), news_index=index)
   document.create_document(data=news_result[0], classement_list=classement_list)
