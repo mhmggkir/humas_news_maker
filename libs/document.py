@@ -54,7 +54,7 @@ def create_document(data, classement_list):
 
   for classement in classement_list:
     scraper.get_classement(classement)
-    document.add_picture("./assets/screenshot.png", width=Inches(4.3))
+    document.add_picture(".cache/screenshot.png", width=Inches(4.3))
 
   datetime_now = datetime.datetime.now()
   first_weekday = datetime.datetime(year=datetime_now.year, month=datetime_now.month, day=1).weekday()

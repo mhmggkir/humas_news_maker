@@ -15,7 +15,7 @@ def scrape_image(element = None, url = "", requests_headers = None):
       print(e)
       print(f"Scraping image failed. Attemps: {i+1}")
       time.sleep(0.5)
-  image = open("./assets/placeholder.png", "rb")
+  image = open("./placeholder.png", "rb")
   image_stream = BytesIO(image.read())
   return image_stream
 
