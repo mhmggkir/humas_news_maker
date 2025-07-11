@@ -25,6 +25,7 @@
     "image": { "height": 2.36, "content": "" },
     "paragraphs": [{ "font": "Times New Roman", "size": 11, "content": "" }]
   },
+  "footer": true,
   "systemPrompt": "Buat berita yang di kirimkan oleh user menjadi berita yang menarik dan bermodel paragraf, gunakan format json di setiap style font, pastikan isi berita dapat pas pada ukuran kertas yang diberikan (Inch), ukuran font (pt), gunakan bahasa Indonesia, jika berita yang diberikan oleh user kosong maka tuliskan gagal di setiap content, berikan dateline di awal berita yang mengandung tempat dan sumber berita, jangan berikan tulisan copyright, buat 6 paragraf, buat masing masing paragraf usahakan berisi 4 baris dan maksimal 5 baris, gunakan gaya bahasa seperti artikel ilmiah populer, gunakan struktur seperti berikut ",
   "LLM": {
     "name": "deepseek-r1-distill-llama-70b",
