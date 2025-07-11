@@ -41,7 +41,7 @@ def create_page(data, img, news_length, news_index):
 
 
 
-def create_document(data, classement_list):
+def create_document(data, classement_list, use_footer):
   section = document.sections[0]
   section.page_width = Inches(data["page"]["width"])
   section.page_height = Inches(data["page"]["height"])
@@ -72,7 +72,7 @@ def create_document(data, classement_list):
   formatted_date = datetime.datetime(month=month, year=year, day=1)
 
   edition = f"{formatted_date.strftime("%B %Y")} ({str(week)})"
-  section.footer.add_paragraph(f"Santri Update {edition}")
+  if use_footer: section.footer.add_paragraph(f"Santri Update {edition}")
   
   out_dir = f"SANS/{formatted_date.strftime("%Y/%B")}"
   os.makedirs(out_dir, exist_ok=True)
