@@ -15,6 +15,7 @@ def make_news(url_arr):
     news_structure = data["newsStructure"]
     system_prompt = data["systemPrompt"]
     use_footer = data["footer"]
+    use_classements = data["classements"]
     LLM = data["LLM"]
 
   news_result = []
@@ -37,5 +38,5 @@ def make_news(url_arr):
         time.sleep(0.3)
       finally:
         document.create_page(data=news, img=news["image"], news_length=len(url_arr), news_index=index)
-  document.create_document(data=news_result[0], classement_list=classement_list, use_footer=use_footer)
+  document.create_document(data=news_result[0], classement_list=classement_list, use_footer=use_footer, use_classements=use_classements)
   print("News created!")

@@ -37,6 +37,7 @@
       "deepseek-r1-distill-llama-70b"
     ]
   },
+  "classements": true,
   "classementList": [
     "https://sport.detik.com/sepakbola/klasemen/liga-indonesia",
     "https://sport.detik.com/sepakbola/klasemen/liga-spanyol",

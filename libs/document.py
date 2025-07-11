@@ -41,7 +41,7 @@ def create_page(data, img, news_length, news_index):
 
 
 
-def create_document(data, classement_list, use_footer):
+def create_document(data, classement_list, use_footer, use_classements):
   section = document.sections[0]
   section.page_width = Inches(data["page"]["width"])
   section.page_height = Inches(data["page"]["height"])
@@ -52,9 +52,10 @@ def create_document(data, classement_list, use_footer):
 
   document.add_page_break()
 
-  for classement in classement_list:
-    scraper.get_classement(classement)
-    document.add_picture(".cache/screenshot.png", width=Inches(4.3))
+  if use_classements:
+    for classement in classement_list:
+      scraper.get_classement(classement)
+      document.add_picture(".cache/screenshot.png", width=Inches(4.3))
 
   datetime_now = datetime.datetime.now()
   first_weekday = datetime.datetime(year=datetime_now.year, month=datetime_now.month, day=1).weekday()
