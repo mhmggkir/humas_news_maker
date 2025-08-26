@@ -26,8 +26,9 @@ def main():
 
 @app.route("/generate", methods=["POST"])
 def generate():
+  new_make_news = make_news
   if request.method == "POST":
-    make_news(request.json["URLList"])
+    new_make_news(request.json["URLList"])
   return "News generated"
 
 def main():
